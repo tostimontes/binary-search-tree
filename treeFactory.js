@@ -196,7 +196,7 @@ function createNewTree(arr) {
         if (node === root) {
           queue.push(node);
         }
-        returnArray.push(root.cb(queue.shift()));
+        returnArray.push(cb(queue.shift()));
 
         if (node.left) {
           queue.push(node.left);
@@ -217,8 +217,142 @@ function createNewTree(arr) {
       return traverseBFS(root, callback);
     },
 
-    inOrder(callback) {},
-    preOrder(callback) {},
+    // * D = Print Data, L = Go Left, R = Go Right, !cb => logData
+    // DLR
+    inOrder(callback) {
+      const returnArray = [];
+      const queue = [];
+
+      // No callback case
+      function logDataInOrder(node) {
+        if (!node) {
+          return null;
+        }
+        if (node === root) {
+          queue.push(node);
+        }
+        returnArray.push(queue.shift().data);
+
+        if (node.left) {
+          queue.push(node.left);
+          logDataInOrder(node.left);
+        }
+        if (node.right) {
+          queue.push(node.right);
+          logDataInOrder(node.right);
+        }
+        return returnArray;
+      }
+
+      // Callback case
+      function traverseInOrder(node, cb) {
+        if (!node) {
+          return null;
+        }
+        if (node === root) {
+          queue.push(node);
+        }
+        returnArray.push(cb(queue.shift().data));
+
+        if (node.left) {
+          queue.push(node.left);
+          traverseInOrder(node.left, cb);
+        }
+        if (node.right) {
+          queue.push(node.right);
+          traverseInOrder(node.right, cb);
+        }
+        return returnArray;
+      }
+      // Main
+      if (!callback) {
+        return logDataInOrder(root);
+      }
+      return traverseInOrder(root, callback);
+    },
+    // LDR
+    preOrder(callback) {
+      const returnArray = [];
+
+      // No callback case
+      function logDataPreOrder(node) {
+        if (!node) {
+          return null;
+        }
+        if (node.left) {
+          logDataPreOrder(node.left);
+        }
+
+        returnArray.push(node.data);
+
+        if (node.right) {
+          logDataPreOrder(node.right);
+        }
+        return returnArray;
+      }
+
+      // Callback case
+      function traversePreOrder(node, cb) {
+        if (!node) {
+          return null;
+        }
+        if (node.left) {
+          traversePreOrder(node.left, cb);
+        }
+
+        returnArray.push(cb(node.data));
+
+        if (node.right) {
+          traversePreOrder(node.right, cb);
+        }
+        return returnArray;
+      }
+      // Main
+      if (!callback) {
+        return logDataPreOrder(root);
+      }
+      return traversePreOrder(root, callback);
+    },
+    // LRD
+    postOrder(callback) {
+      const returnArray = [];
+
+      // No callback case
+      function logDataPostOrder(node) {
+        if (!node) {
+          return null;
+        }
+        if (node.left) {
+          logDataPostOrder(node.left);
+        }
+        if (node.right) {
+          logDataPostOrder(node.right);
+        }
+        returnArray.push(node.data);
+
+        return returnArray;
+      }
+
+      // Callback case
+      function traversePostOrder(node, cb) {
+        if (!node) {
+          return null;
+        }
+        if (node.left) {
+          traversePostOrder(node.left, cb);
+        }
+        if (node.right) {
+          traversePostOrder(node.right, cb);
+        }
+        returnArray.push(cb(node.data));
+
+        return returnArray;
+      }
+      if (!callback) {
+        return logDataPostOrder(root);
+      }
+      return traversePostOrder(root, callback);
+    },
 
     height(node) {
       // return node's height === # of edges in the longest path from given node to leaf node
@@ -271,5 +405,11 @@ tree.insert(4);
 tree.delete(8);
 
 tree.find(2);
-tree.levelOrder();
+function multiplyByTwo(number) {
+  return number * 2;
+}
+// tree.inOrder(multiplyByTwo);
+tree.postOrder();
+
+tree.postOrder(multiplyByTwo);
 // console.log(tree.print());
