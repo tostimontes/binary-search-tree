@@ -144,18 +144,81 @@ function createNewTree(arr) {
     },
 
     find(value) {
-      // return node
+      function traverseTree(number, node) {
+        // Base case
+        if (node.data === number) {
+          return node;
+        }
+
+        // Recursive case
+        if (number < node.data && node.left) {
+          return traverseTree(number, node.left);
+        }
+        if (number > node.data && node.right) {
+          return traverseTree(number, node.right);
+        }
+        return null;
+      }
+      return traverseTree(value, root);
     },
 
-    levelOrder(cb) {
-      // traverse BFS
-      // use a queue to log children nodes and dequeue (log out the queue to array) and enqueue (log into the queue)
-      // return array with traverse data logs
+    levelOrder(callback) {
+      const returnArray = [];
+      const queue = [];
+
+      // No callback case
+      function logDataBFS(node) {
+        if (!node) {
+          return null;
+        }
+        if (node === root) {
+          queue.push(node);
+        }
+        returnArray.push(queue.shift().data);
+
+        if (node.left) {
+          queue.push(node.left);
+        }
+        if (node.right) {
+          queue.push(node.right);
+        }
+        if (queue.length === 0) {
+          return returnArray;
+        }
+        logDataBFS(queue[0]);
+      }
+
+      // Callback case
+      function traverseBFS(node, cb) {
+        if (!node) {
+          return null;
+        }
+        if (node === root) {
+          queue.push(node);
+        }
+        returnArray.push(root.cb(queue.shift()));
+
+        if (node.left) {
+          queue.push(node.left);
+        }
+        if (node.right) {
+          queue.push(node.right);
+        }
+        if (queue.length === 0) {
+          return returnArray;
+        }
+        traverseBFS(queue[0], cb);
+      }
+
+      // Main
+      if (!callback) {
+        return logDataBFS(root);
+      }
+      return traverseBFS(root, callback);
     },
 
-    inOrder(cb) {},
-    preOrder(cb) {},
-    postOrder(cb) {},
+    inOrder(callback) {},
+    preOrder(callback) {},
 
     height(node) {
       // return node's height === # of edges in the longest path from given node to leaf node
@@ -207,4 +270,6 @@ tree.delete(324);
 tree.insert(4);
 tree.delete(8);
 
-tree.print();
+tree.find(2);
+tree.levelOrder();
+// console.log(tree.print());
