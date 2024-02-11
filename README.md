@@ -99,3 +99,6 @@ console.log('Pre-order traversal with values multiplied by 2:', preOrderValues);
 // For example, output for the initial tree: [8, 6, 2, 14, 10, 18, 16, 46, 134, 648, 12690]
 
 ```
+
+### Driver Script for testing
+The provided driver script serves as a practical demonstration and testing tool for the Balanced Binary Search Tree implementation. It showcases key functionalities such as creating the tree from an array of random numbers, performing insertions and deletions, and executing various tree traversal methods. The script also highlights the tree's self-balancing feature by deliberately unbalancing the tree and then using the rebalance method to restore its balance. 

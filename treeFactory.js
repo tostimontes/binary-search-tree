@@ -186,7 +186,7 @@ function createNewTree(arr) {
         if (queue.length === 0) {
           return returnArray;
         }
-        logDataBFS(queue[0]);
+        return logDataBFS(queue[0]);
       }
 
       // Callback case
@@ -208,7 +208,7 @@ function createNewTree(arr) {
         if (queue.length === 0) {
           return returnArray;
         }
-        traverseBFS(queue[0], cb);
+        return traverseBFS(queue[0], cb);
       }
 
       // Main
@@ -449,4 +449,9 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   if (node.left !== null) {
     prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
   }
+};
+
+module.exports = {
+  createNewTree,
+  prettyPrint,
 };
