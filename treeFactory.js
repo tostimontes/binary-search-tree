@@ -1,16 +1,15 @@
 const { createNewNode } = require('./nodeFactory');
 
-function filterSort(arr) {
-  const filteredArray = [];
-  arr.forEach((number) => {
-    if (!filteredArray.includes(number)) {
-      filteredArray.push(number);
-    }
-  });
-  return filteredArray.sort((a, b) => a - b);
-}
 function createNewTree(arr) {
-  let root = buildTree(arr);
+  function filterSort(arrayToSort) {
+    const filteredArray = [];
+    arrayToSort.forEach((number) => {
+      if (!filteredArray.includes(number)) {
+        filteredArray.push(number);
+      }
+    });
+    return filteredArray.sort((a, b) => a - b);
+  }
 
   function buildTree(array) {
     const sortedArray = filterSort(array);
@@ -42,6 +41,8 @@ function createNewTree(arr) {
 
     return attachNodes(sortedArray);
   }
+
+  let root = buildTree(arr);
 
   const tree = {
     insert(value) {
@@ -116,10 +117,10 @@ function createNewTree(arr) {
           }
           // Two children
           else {
-            childPosition === 'left'
-              ? (parentNode.left = node.left)
-              : (parentNode.right = node.left);
-            traverseRight(node.left, node.right);
+            const inOrderPredecessor = findLeftMax(node.left);
+            node.data = inOrderPredecessor.data;
+            traverseTree(node.left, inOrderPredecessor.data, node, 'left');
+            return;
           }
           return node;
         }
@@ -355,28 +356,87 @@ function createNewTree(arr) {
     },
 
     height(node) {
-      // return node's height === # of edges in the longest path from given node to leaf node
+      if (!this.find(node)) {
+        return null;
+      }
+
+      let maxHeight = 0;
+      let height = 0;
+
+      function findHeight(node) {
+        if (node.left) {
+          height += 1;
+          findHeight(node.left);
+        }
+        if (node.right) {
+          height += 1;
+          findHeight(node.right);
+        }
+        maxHeight = Math.max(height, maxHeight);
+        height = 0;
+
+        return maxHeight;
+      }
+      return findHeight(this.find(node));
     },
     depth(node) {
-      // return node's depth === # of edges in the path from a given node to the tree’s root node.
+      const searchNode = this.find(node);
+      if (!searchNode) {
+        return null;
+      }
+
+      let depth = 0;
+
+      function findDepth(currentNode) {
+        if (searchNode === currentNode) {
+          return depth;
+        }
+        if (searchNode.data < currentNode.data) {
+          if (currentNode.left) {
+            depth += 1;
+            return findDepth(currentNode.left);
+          }
+        }
+        if (searchNode.data > currentNode.data) {
+          depth += 1;
+          return findDepth(currentNode.right);
+        }
+      }
+
+      return findDepth(root);
     },
 
-    isBalanced() {},
+    isBalanced() {
+      const checkBalance = (node) => {
+        if (!node) {
+          return true;
+        }
 
+        const leftHeight = this.height(node.left ? node.left.data : null);
+        const rightHeight = this.height(node.right ? node.right.data : null);
+
+        if (Math.abs(leftHeight - rightHeight) < 2) {
+          return checkBalance(node.left) && checkBalance(node.right);
+        }
+        return false;
+      };
+      return checkBalance(root);
+    },
     rebalance() {
-      // Tip: You’ll want to use a traversal method to provide a new array to the buildTree function.
+      if (!this.isBalanced()) {
+        root = buildTree(this.preOrder());
+        return root;
+      }
+      return null;
     },
 
     print() {
       prettyPrint(root);
     },
   };
+
   return tree;
 }
-
-const testArray = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
-
-const tree = createNewTree(testArray);
 
 const prettyPrint = (node, prefix = '', isLeft = true) => {
   if (node === null) {
@@ -390,26 +450,3 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
     prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
   }
 };
-
-tree.insert(2);
-tree.insert(354);
-tree.insert(35423);
-tree.insert(6);
-tree.insert(8);
-tree.delete(7);
-tree.delete(5);
-tree.delete(4);
-tree.delete(6345);
-tree.delete(324);
-tree.insert(4);
-tree.delete(8);
-
-tree.find(2);
-function multiplyByTwo(number) {
-  return number * 2;
-}
-// tree.inOrder(multiplyByTwo);
-tree.postOrder();
-
-tree.postOrder(multiplyByTwo);
-// console.log(tree.print());
